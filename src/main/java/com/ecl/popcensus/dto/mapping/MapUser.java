@@ -23,6 +23,8 @@ public class MapUser {
         dto.setCreatedBy(user.getCreatedBy());
         dto.setModifiedAt(user.getModifiedAt());
         dto.setModifiedBy(user.getModifiedBy());
+        dto.setDeletedAt(user.getDeletedAt());
+        dto.setModifiedBy(user.getDeletedBy());
 
         return dto;
     }

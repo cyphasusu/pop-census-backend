@@ -1,7 +1,11 @@
+com/ecl/popcensus/model/CensusForm.class
 com/ecl/popcensus/dto/requests/TokenRefreshRequest.class
+com/ecl/popcensus/dto/requests/CensusFormRequest.class
 com/ecl/popcensus/dto/mapping/MapUser.class
 com/ecl/popcensus/config/CorsConfig.class
+com/ecl/popcensus/dto/mapping/MapCensusForm.class
 com/ecl/popcensus/dto/requests/RegisterUserRequest.class
+com/ecl/popcensus/service/CensusFormService.class
 com/ecl/popcensus/repository/RefreshTokenRepository.class
 com/ecl/popcensus/config/OpenApiConfig.class
 com/ecl/popcensus/util/validators/PhoneNumberConstraint.class
@@ -14,13 +18,15 @@ com/ecl/popcensus/util/Settings.class
 com/ecl/popcensus/service/RefreshTokenService.class
 com/ecl/popcensus/service/JWTUserDetailsService.class
 com/ecl/popcensus/dto/requests/JWTRequest.class
+com/ecl/popcensus/repository/CensusFormRepository.class
+com/ecl/popcensus/dto/responses/CensusFormResponse.class
 com/ecl/popcensus/dto/responses/MessageResponse.class
 com/ecl/popcensus/config/SecurityConfig.class
 com/ecl/popcensus/model/User.class
 com/ecl/popcensus/dto/responses/JWTRefreshTokenResponse.class
 com/ecl/popcensus/controller/UserController.class
-com/ecl/popcensus/controller/ProtectedController.class
 com/ecl/popcensus/dto/responses/UserListResponse.class
+com/ecl/popcensus/controller/CensusFormController.class
 com/ecl/popcensus/dto/responses/Metadata.class
 com/ecl/popcensus/model/UserStatus.class
 com/ecl/popcensus/dto/responses/Response.class
@@ -33,6 +39,7 @@ com/ecl/popcensus/dto/responses/UserResponse.class
 com/ecl/popcensus/PopcensusApplication.class
 com/ecl/popcensus/util/validators/NameValidator.class
 com/ecl/popcensus/util/validators/PhoneNumberValidator.class
+com/ecl/popcensus/dto/responses/CensusListResponse.class
 com/ecl/popcensus/repository/UserRepository.class
 com/ecl/popcensus/service/UserService.class
 com/ecl/popcensus/util/validators/NameConstraint.class

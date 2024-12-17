@@ -35,14 +35,18 @@ public class UserController {
     }
 
     @GetMapping(path = "{userId}")
-    public UserResponse getUser(@PathVariable("userId") Long userId) {
+    public UserResponse getUser(
+            @PathVariable("userId") Long userId)
+    {
         log.info("Received request to get user with userId : " + userId);
         return this.userService.getUserById(userId);
     }
 
     @Operation(summary = "Register a user", description = "Send a POST request to register a new user")
     @PostMapping("/register")
-    public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody RegisterUserRequest user) {
+    public ResponseEntity<UserResponse> registerUser(
+            @Valid @RequestBody RegisterUserRequest user)
+    {
         UserResponse response = userService.registerUser(user);
 
         if (response == null) return ResponseEntity.badRequest().body(response);
@@ -50,13 +54,18 @@ public class UserController {
     }
 
     @DeleteMapping(path = "{userId}")
-    public UserResponse deleteUser(@PathVariable("userId") Long userId) {
+    public UserResponse deleteUser(
+            @PathVariable("userId") Long userId)
+    {
         log.info("Received request to delete user with userId : " + userId);
         return this.userService.deleteUser(userId);
     }
 
     @PutMapping(path = "{userId}")
-    public UserResponse updateUser(@PathVariable("userId") Long userId, @Valid @RequestBody RegisterUserRequest user) {
+    public UserResponse updateUser(
+            @PathVariable("userId") Long userId,
+            @Valid @RequestBody RegisterUserRequest user)
+    {
         log.info("Received request to update user with userId : " + userId);
         return this.userService.updateUser(userId, user);
     }

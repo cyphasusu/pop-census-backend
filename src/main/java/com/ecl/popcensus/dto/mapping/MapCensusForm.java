@@ -23,6 +23,8 @@ public class MapCensusForm {
         dto.setCreatedBy(censusForm.getCreatedBy());
         dto.setModifiedAt(censusForm.getModifiedAt());
         dto.setModifiedBy(censusForm.getModifiedBy());
+        dto.setDeletedAt(censusForm.getDeletedAt());
+        dto.setDeletedBy(censusForm.getDeletedBy());
 
         return dto;
 

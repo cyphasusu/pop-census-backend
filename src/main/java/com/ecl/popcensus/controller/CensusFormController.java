@@ -32,7 +32,9 @@ public class CensusFormController {
 
     @Operation(summary = "Create census form", description = "Send a POST request to create a new census form")
     @PostMapping
-    public CensusFormResponse createCensusForm(@Valid @RequestBody CensusFormRequest censusFormRequest) {
+    public CensusFormResponse createCensusForm(
+            @Valid @RequestBody CensusFormRequest censusFormRequest
+    ) {
         log.info("Received request to add census form");
         var newCensusForm = new CensusForm();
         newCensusForm.setCensusFormName(censusFormRequest.getCensusFormName());
@@ -52,24 +54,37 @@ public class CensusFormController {
         return this.censusFormService.getCensusForms(page, size, censusFormName);
     }
 
-//
-//    @GetMapping(path = "{userId}")
-//    public UserResponse getUser(@PathVariable("userId") Long userId) {
-//        log.info("Received request to get user with userId : " + userId);
-//        return this.userService.getUserById(userId);
-//    }
-//
-//    @DeleteMapping(path = "{userId}")
-//    public UserResponse deleteUser(@PathVariable("userId") Long userId) {
-//        log.info("Received request to delete user with userId : " + userId);
-//        return this.userService.deleteUser(userId);
-//    }
-//
-//    @PutMapping(path = "{userId}")
-//    public UserResponse updateUser(@PathVariable("userId") Long userId, @Valid @RequestBody RegisterUserRequest user) {
-//        log.info("Received request to update user with userId : " + userId);
-//        return this.userService.updateUser(userId, user);
-//    }
+
+    @Operation(summary = "Fetch census forms by id", description = "Send a GET request to fetch census form details by id. Pass census form id as a path variable")
+    @GetMapping(path = "{censusFormId}")
+    public CensusFormResponse getCensusFormById(
+            @PathVariable("censusFormId") Long censusFormId)
+    {
+        log.info("Received request to get census form by censusFormId : " + censusFormId);
+        return this.censusFormService.getCensusFormById(censusFormId);
+    }
+
+    @Operation(summary = "Delete census form", description = "Send a DELETE request to remove census form. Pass census form id as a path variable")
+    @DeleteMapping(path = "{censusFormId}")
+    public CensusFormResponse deleteCensusFormById(
+            @PathVariable("censusFormId") Long censusFormId)
+    {
+        log.info("Received request to delete census form by deleteCensusFormById : " + censusFormId);
+        return this.censusFormService.deleteCensusFormById(censusFormId);
+    }
+
+    @Operation(summary = "Update census form", description = "Send a PUT request to update details of a census form. Pass census form id as a path variable")
+    @PutMapping(path = "{censusFormId}")
+    public CensusFormResponse updateCensusForm(
+            @PathVariable("censusFormId") Long censusFormId,
+            @Valid @RequestBody CensusFormRequest censusFormRequest) {
+        log.info("Received request to update census form");
+        var newCensusForm = new CensusForm();
+        newCensusForm.setCensusFormName(censusFormRequest.getCensusFormName());
+        newCensusForm.setCensusFormLocation(censusFormRequest.getCensusFormLocation());
+        newCensusForm.setCensusFormDesc(censusFormRequest.getCensusFormDesc());
+        return censusFormService.updateCensusForm(censusFormId, newCensusForm);
+    }
 
 
 

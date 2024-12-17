@@ -99,6 +99,88 @@ public class CensusFormService {
     }
 
 
+    public CensusFormResponse getCensusFormById(Long censusFormId){
+        CensusFormResponse censusFormResponse = new CensusFormResponse();
+        try {
+            CensusForm u = censusFormRepository.findById(censusFormId).orElseThrow(() -> new IllegalStateException("This census form does not exist"));
+
+            censusFormResponse.setData(u);
+            censusFormResponse.setCount(1);
+            censusFormResponse.setResponseCode(Settings.getInstance("").getProperty("SUCCESS_CODE"));
+            censusFormResponse.setResponseMessage("Successfully retrieved census form");
+            log.info("Census form with censusFormId {} fetched successfully", censusFormId);
+        }catch (IllegalStateException illegalStateException){
+            censusFormResponse.setResponseCode(Settings.getInstance("").getProperty("INTERNAL_SERVER_ERROR"));
+            censusFormResponse.setResponseMessage("An error occurred getting census form by censusFormId. Error : " + illegalStateException);
+            log.info("An error occurred getting user by userId");
+        }
+        return censusFormResponse;
+    }
+
+    public CensusFormResponse deleteCensusFormById(Long censusFormId) {
+        CensusFormResponse censusFormResponse = new CensusFormResponse();
+        try {
+            String authenticatedUser = JwtTokenFilter.authenticatedUser;
+            CensusForm u = censusFormRepository.findById(censusFormId).orElseThrow(() -> new IllegalStateException("This census form does not exist"));
+            u.setDeletedAt(new Date());
+            u.setDeletedBy(authenticatedUser);
+            u.setCensusFormStatus(UserStatus.Deactivated);
+            u.setModifiedAt(new Date());
+            u.setModifiedBy(authenticatedUser);
+
+            log.info("SavedCensusForm : ", u);
+            censusFormRepository.save(u);
+
+            censusFormResponse.setData(u);
+            censusFormResponse.setCount(1);
+            censusFormResponse.setResponseCode(Settings.getInstance("").getProperty("SUCCESS_CODE"));
+            censusFormResponse.setResponseMessage("Successfully deleted census form with id " +  censusFormId);
+            log.info("Census form with censusFormId {} deleted successfully", censusFormId);
+        }catch (IllegalStateException illegalStateException){
+            censusFormResponse.setResponseCode(Settings.getInstance("").getProperty("INTERNAL_SERVER_ERROR"));
+            censusFormResponse.setResponseMessage("An error occurred while deleting census form with censusFormId. Error : " + illegalStateException);
+            log.error("An error occurred while deleting census form with censusFormId : " + censusFormId);
+        }
+
+        return censusFormResponse;
+    }
+
+    public CensusFormResponse updateCensusForm(Long censusFormId, CensusForm censusForm) {
+        var censusFormResponse = new CensusFormResponse();
+        try{
+            String authenticatedUser = JwtTokenFilter.authenticatedUser;
+            var censusFormOptional = this.censusFormRepository.findById(censusFormId);
+            if(censusFormOptional.isPresent()){
+                var existingCensusForm = censusFormOptional.get();
+                existingCensusForm.setCensusFormName(censusForm.getCensusFormName());
+                existingCensusForm.setCensusFormLocation(censusForm.getCensusFormLocation());
+                existingCensusForm.setCensusFormDesc(censusForm.getCensusFormDesc());
+                existingCensusForm.setModifiedBy(authenticatedUser);
+                existingCensusForm.setModifiedAt(new Date());
+
+                censusFormRepository.save(existingCensusForm);
+
+                var client = MapCensusForm.mapToCensusFormEntity(existingCensusForm);
+                censusFormResponse.setData(client);
+                censusFormResponse.setCount(1);
+                censusFormResponse.setResponseCode(Settings.getInstance("").getProperty("SUCCESS_CODE"));
+                censusFormResponse.setResponseMessage("Census form updated successfully");
+                log.info("Successfully updated census form with id: " + censusFormId);
+            } else {
+                log.info("Census form with id {} does not exist", censusFormId);
+                censusFormResponse.setResponseCode(Settings.getInstance("").getProperty("BAD_REQUEST_CODE"));
+                censusFormResponse.setResponseMessage("Census form with id : " + censusFormId + " does not exist");
+            }
+        }catch(Exception ex){
+            log.info("An error occurred updating census form with id {}. Error : " , censusFormId, ex);
+            censusFormResponse.setResponseCode(Settings.getInstance("").getProperty("INTERNAL_SERVER_ERROR"));
+            censusFormResponse.setResponseMessage("An error occurred while updating census form with censusFormId. Error : " + ex);
+        }
+
+        return censusFormResponse;
+    }
+
+
 
 
 }
