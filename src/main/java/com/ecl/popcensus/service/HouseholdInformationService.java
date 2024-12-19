@@ -1,33 +1,11 @@
 package com.ecl.popcensus.service;
 
-import com.ecl.popcensus.Filters.JwtTokenFilter;
-import com.ecl.popcensus.dto.mapping.MapCensusForm;
-import com.ecl.popcensus.dto.mapping.MapUser;
-import com.ecl.popcensus.dto.requests.CensusFormRequest;
-import com.ecl.popcensus.dto.requests.RegisterUserRequest;
-import com.ecl.popcensus.dto.responses.*;
 import com.ecl.popcensus.model.HouseholdInformation;
-import com.ecl.popcensus.model.CensusForm;
-import com.ecl.popcensus.model.User;
-import com.ecl.popcensus.model.UserStatus;
 import com.ecl.popcensus.repository.HouseholdInformationRepository;
 import com.ecl.popcensus.repository.CensusFormRepository;
-import com.ecl.popcensus.repository.UserRepository;
-import com.ecl.popcensus.util.Settings;
-import jakarta.persistence.criteria.Predicate;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-
 @Service
-@Slf4j
 public class HouseholdInformationService {
     private final HouseholdInformationRepository householdRepository;
     private final CensusFormRepository censusFormRepository;
@@ -41,31 +19,34 @@ public class HouseholdInformationService {
     }
 
     public HouseholdInformation createHouseholdInfo(Long censusFormId, HouseholdInformation householdInfo) {
-        CensusForm form = censusFormRepository.findById(censusFormId)
-            .orElseThrow(() -> new IllegalStateException("Census form not found with ID: " + censusFormId));
+        // Verify census form exists
+        if (!censusFormRepository.existsById(censusFormId)) {
+            throw new IllegalStateException("Census form not found with ID: " + censusFormId);
+        }
+        System.out.println("Done checking if census form already exists");
 
-        // Check for duplicate verification ID within the same form
-        if (householdRepository.existsByCensusForm_CensusFormIdAndVerificationId(
+        // Check if household info already exists for this census form
+        if (householdRepository.findByCensusFormId(censusFormId).isPresent()) {
+            throw new IllegalStateException("Household information already exists for this census form");
+        }
+        System.out.println("Done checking if household info already exists");
+
+        // Check for duplicate verification ID
+        if (householdRepository.existsByCensusFormIdAndVerificationId(
                 censusFormId, householdInfo.getVerificationId())) {
             throw new IllegalStateException("Verification ID already exists in this census form");
         }
 
-        householdInfo.setCensusForm(form);
-        //householdInfo.setCreatedAt(new Date());
-        //householdInfo.setCreatedBy(JwtTokenFilter.authenticatedUser);
-        //householdInfo.setModifiedAt(new Date());
-        //householdInfo.setModifiedBy(JwtTokenFilter.authenticatedUser);
+        System.out.println("Done checking for duplicates");
 
+        householdInfo.setCensusFormId(censusFormId);
+        System.out.println("Done setting census form id");
         return householdRepository.save(householdInfo);
     }
 
-    public Page<HouseholdInformation> getHouseholdInfoByFormId(
-        Long censusFormId, 
-        int page, 
-        int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return householdRepository.findByCensusFormId(censusFormId, pageable);
+    public HouseholdInformation getHouseholdInfoByFormId(Long censusFormId) {
+        return householdRepository.findByCensusFormId(censusFormId)
+            .orElseThrow(() -> new IllegalStateException("Household information not found for census form: " + censusFormId));
     }
 
     public HouseholdInformation updateHouseholdInfo(
@@ -74,7 +55,7 @@ public class HouseholdInformationService {
         HouseholdInformation updatedInfo
     ) {
         HouseholdInformation existingInfo = householdRepository
-            .findByIdAndCensusForm_CensusFormId(householdId, censusFormId)
+            .findByIdAndCensusFormId(householdId, censusFormId)
             .orElseThrow(() -> new IllegalStateException("Household information not found"));
 
         existingInfo.setRegionName(updatedInfo.getRegionName());
@@ -86,8 +67,6 @@ public class HouseholdInformationService {
         existingInfo.setDetailedAddress(updatedInfo.getDetailedAddress());
         existingInfo.setContactPhoneNumber1(updatedInfo.getContactPhoneNumber1());
         existingInfo.setContactPhoneNumber2(updatedInfo.getContactPhoneNumber2());
-        //existingInfo.setModifiedAt(new Date());
-        //existingInfo.setModifiedBy(JwtTokenFilter.authenticatedUser);
 
         return householdRepository.save(existingInfo);
     }

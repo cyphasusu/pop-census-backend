@@ -2,6 +2,7 @@ package com.ecl.popcensus.controller;
 
 import com.ecl.popcensus.dto.requests.CensusFormRequest;
 import com.ecl.popcensus.dto.requests.RegisterUserRequest;
+import com.ecl.popcensus.dto.requests.HouseholdInformationRequest;
 import com.ecl.popcensus.dto.responses.CensusFormResponse;
 import com.ecl.popcensus.dto.responses.CensusListResponse;
 import com.ecl.popcensus.dto.responses.UserListResponse;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Page;
 
 import javax.validation.Valid;
 
+
 @RestController
 @RequestMapping("/api/v1/census-forms/{formId}/households")
 @Slf4j
@@ -35,29 +37,25 @@ public class HouseholdInformationController {
     @PostMapping
     public ResponseEntity<HouseholdInformation> createHouseholdInfo(
         @PathVariable Long formId,
-        @Valid @RequestBody HouseholdInformation householdInfo
+        @Valid @RequestBody HouseholdInformationRequest request
     ) {
-        log.info("Creating household information for census form: {}", formId);
+        log.info("Received request for formId: " + formId);
+        HouseholdInformation householdInfo = HouseholdInformation.fromRequest(request);
         return ResponseEntity.ok(householdService.createHouseholdInfo(formId, householdInfo));
     }
 
     @GetMapping
-    public ResponseEntity<Page<HouseholdInformation>> getHouseholdsByForm(
-        @PathVariable Long formId,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size
-    ) {
-        log.info("Fetching household information for census form: {}", formId);
-        return ResponseEntity.ok(householdService.getHouseholdInfoByFormId(formId, page, size));
+    public ResponseEntity<HouseholdInformation> getHouseholdByForm(@PathVariable Long formId) {
+        return ResponseEntity.ok(householdService.getHouseholdInfoByFormId(formId));
     }
 
     @PutMapping("/{householdId}")
     public ResponseEntity<HouseholdInformation> updateHouseholdInfo(
         @PathVariable Long formId,
         @PathVariable Long householdId,
-        @Valid @RequestBody HouseholdInformation householdInfo
+        @Valid @RequestBody HouseholdInformationRequest request
     ) {
-        log.info("Updating household information: {} for census form: {}", householdId, formId);
+        HouseholdInformation householdInfo = HouseholdInformation.fromRequest(request);
         return ResponseEntity.ok(householdService.updateHouseholdInfo(formId, householdId, householdInfo));
     }
 }

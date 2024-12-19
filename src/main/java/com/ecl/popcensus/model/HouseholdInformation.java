@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.ToString;
 import java.util.Date;
+import com.ecl.popcensus.dto.requests.HouseholdInformationRequest;
+
 
 
 @Entity
@@ -13,11 +15,12 @@ import java.util.Date;
 public class HouseholdInformation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonIgnore
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "form_id", nullable = false)
-    private CensusForm censusForm;
+    @Column(name = "census_form_id", unique = true, nullable = false)
+    @JsonIgnore
+    private Long censusFormId;
 
     @Column(name = "region_name")
     private String regionName;
@@ -58,12 +61,12 @@ public class HouseholdInformation {
     }
 
     // Getter and Setter for censusForm
-    public CensusForm getCensusForm() {
-        return censusForm;
+    public Long getCensusFormId() {
+        return censusFormId;
     }
 
-    public void setCensusForm(CensusForm censusForm) {
-        this.censusForm = censusForm;
+    public void setCensusFormId(Long censusFormId) {
+        this.censusFormId = censusFormId;
     }
 
     // Getter and Setter for regionName
@@ -148,6 +151,30 @@ public class HouseholdInformation {
 
     public void setContactPhoneNumber2(String contactPhoneNumber2) {
         this.contactPhoneNumber2 = contactPhoneNumber2;
+    }
+
+    public static HouseholdInformation fromRequest(HouseholdInformationRequest request) {
+        HouseholdInformation info = new HouseholdInformation();
+        info.setRegionName(request.getRegionName());
+        info.setDistrictName(request.getDistrictName());
+        info.setDistrictType(request.getDistrictType());
+        info.setSubDistrict(request.getSubDistrict());
+        info.setLocalityName(request.getLocalityName());
+        info.setVerificationId(request.getVerificationId());
+        info.setDetailedAddress(request.getDetailedAddress());
+        info.setContactPhoneNumber1(request.getContactPhoneNumber1());
+        info.setContactPhoneNumber2(request.getContactPhoneNumber2());
+        System.out.println("-------Print Outs------");
+        System.out.println(info.getRegionName());
+        System.out.println(info.getDistrictName());
+        System.out.println(info.getDistrictType());
+        System.out.println(info.getSubDistrict());
+        System.out.println(info.getLocalityName());
+        System.out.println(info.getVerificationId());
+        System.out.println(info.getDetailedAddress());
+        System.out.println(info.getContactPhoneNumber1());
+        System.out.println(info.getContactPhoneNumber2());
+        return info;
     }
 
     
