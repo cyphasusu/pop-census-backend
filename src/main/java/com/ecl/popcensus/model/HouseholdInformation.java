@@ -15,12 +15,16 @@ import com.ecl.popcensus.dto.requests.HouseholdInformationRequest;
 public class HouseholdInformation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     @Column(name = "census_form_id", unique = true, nullable = false)
     @JsonIgnore
     private Long censusFormId;
+
+    @Column(name = "form_id", unique = true, nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Long formId;
 
     @Column(name = "region_name")
     private String regionName;
@@ -67,6 +71,7 @@ public class HouseholdInformation {
 
     public void setCensusFormId(Long censusFormId) {
         this.censusFormId = censusFormId;
+        this.formId = censusFormId;
     }
 
     // Getter and Setter for regionName

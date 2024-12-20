@@ -3,11 +3,13 @@ package com.ecl.popcensus.model;
 
 import jakarta.persistence.*;
 import javax.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "outer_wall")
 public class OuterWall {
     @Id
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
